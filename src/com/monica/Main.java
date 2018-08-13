@@ -50,57 +50,83 @@ public class Main {
 
         //Create some variable
         String game;
-        boolean Xwin, Owin;
-        int[] x = new int[9];
-        int[] o = new int[9];
+        boolean valid;
 
         //Scan input
         game = scanner.nextLine().toUpperCase();
 
+        //Validate input
+        valid = checkInput(game);
+
         //Discard invalid board
-        if((game.length() != 9) || (!game.matches("[X|O|-]*"))){
-            STATUS = INVALID;
+        if(valid){
+            STATUS = setStatus(game);
         } else {
-            //Find X and O location
-            for (int i = 0; i < game.length(); i++){
-                switch (game.charAt(i)){
-                    case 'X':
-                        x[i] = 1;
-                        break;
-                    case 'O':
-                        o[i] = 1;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            //Create array of object to store player
-            Player[] myPlayer = new Player[2];
-
-            //Initialize each object
-            myPlayer[0] = new Player('X', x);
-            myPlayer[1] = new Player('O', o);
-
-            //Check win
-            Xwin = myPlayer[0].CheckWin();
-            Owin = myPlayer[1].CheckWin();
-
-            //Setting status
-
-            if(Xwin && Owin){
-               STATUS = INVALID; //Both win, invalid
-            } else if (Math.abs(myPlayer[0].count - myPlayer[1].count) > 1){
-                STATUS = INVALID; //Difference > 1, not taking turn
-            } else if (Xwin) {
-                STATUS = XWIN; //X win
-            } else if (Owin) {
-                STATUS = OWIN; //O win
-            } else if (myPlayer[0].count + myPlayer[1].count == 9){
-                STATUS = DRAW; //Board filled, no winner
-            }
+            STATUS = INVALID;
         }
 
         System.out.println(STATUS);
+    }
+
+    public static boolean checkInput(String input){
+        boolean valid;
+        valid = false;
+
+        if((input.length() == 9) && (input.matches("[X|O|-]*"))){
+            valid = true;
+        }
+
+        return valid;
+    }
+
+    public static String setStatus(String game){
+
+        //Create some variable
+        boolean Xwin, Owin;
+        int[] x = new int[9];
+        int[] o = new int[9];
+
+        //Find X and O location
+        for (int i = 0; i < game.length(); i++){
+            switch (game.charAt(i)){
+                case 'X':
+                    x[i] = 1;
+                    break;
+                case 'O':
+                    o[i] = 1;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        //Create array of object to store player
+        Player[] myPlayer = new Player[2];
+
+        //Initialize each object
+        myPlayer[0] = new Player('X', x);
+        myPlayer[1] = new Player('O', o);
+
+        //Check win
+        Xwin = myPlayer[0].CheckWin();
+        Owin = myPlayer[1].CheckWin();
+
+        //Setting status
+
+        String myStatus = PROGRESS;
+
+        if(Xwin && Owin){
+            myStatus = INVALID; //Both win, invalid
+        } else if (Math.abs(myPlayer[0].count - myPlayer[1].count) > 1){
+            myStatus = INVALID; //Difference > 1, not taking turn
+        } else if (Xwin) {
+            myStatus = XWIN; //X win
+        } else if (Owin) {
+            myStatus = OWIN; //O win
+        } else if (myPlayer[0].count + myPlayer[1].count == 9){
+            myStatus = DRAW; //Board filled, no winner
+        }
+
+        return myStatus;
     }
 }
